@@ -1,3 +1,5 @@
+@prefix : <http://example.org/ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix dprod: <https://ekgf.github.io/dprod/> .
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
