@@ -1,0 +1,82 @@
+@prefix ex: <http://example.org/tla_data/> .
+@prefix tla_dprod: <https://ekgf.github.io/hyprcat/tla_dprod/> .
+@prefix dprod: <https://ekgf.github.io/dprod/> .
+@prefix xapi: <https://w3id.org/xapi/ontology#> .
+@prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Example Competency
+ex:competency_rdf_basics a tla_dprod:Competency ;
+    skos:prefLabel "RDF Basics"@en ;
+    skos:definition "Understanding fundamental concepts of the Resource Description Framework."@en .
+
+# Example xAPI Activity (underlying the data product)
+ex:xapi_activity_rdf_quiz a xapi:Activity ;
+    xapi:id "http://example.com/activities/rdf_quiz"^^xsd:anyURI ;
+    xapi:definition [
+        a xapi:ActivityDefinition ;
+        xapi:name "RDF Basics Quiz"@en ;
+        xapi:description "A quiz assessing basic knowledge of RDF."@en ;
+        xapi:type [
+            a xapi:ActivityType ;
+            xapi:id "http://adlnet.gov/expapi/activities/assessment"^^xsd:anyURI
+        ]
+    ] .
+
+# Example XAPI Data Source
+ex:quiz_xapi_statements a tla_dprod:XAPIDataSource ;
+    dct:title "RDF Quiz xAPI Statements Log"@en ;
+    dcat:mediaType "application/json" ;
+    dcat:downloadURL <http://example.com/data/rdf_quiz_xapi_statements.json> .
+
+# Example Learning Activity Product
+ex:lap_rdf_quiz_analysis a tla_dprod:LearningActivityProduct ;
+    dct:title "RDF Quiz Performance Analysis Data Product"@en ;
+    dct:description "Provides an analysis of learner performance on the RDF Basics Quiz, derived from xAPI statements."@en ;
+    dprod:inputDataset ex:quiz_xapi_statements ;
+    tla_dprod:assessesCompetency ex:competency_rdf_basics ;
+    tla_dprod:referencesActivity ex:xapi_activity_rdf_quiz ;
+    dprod:outputDataset [
+        a dcat:Dataset ;
+        dct:title "RDF Quiz Performance Report (CSV)"@en ;
+        dcat:mediaType "text/csv" ;
+        dcat:downloadURL <http://example.com/reports/rdf_quiz_performance.csv>
+    ] ;
+    hydra:Link [
+        hydra:property dprod:inputDataset ;
+        hydra:description "The xAPI statement log used as input for this analysis."@en ;
+        hydra:range tla_dprod:XAPIDataSource # Or dcat:Dataset
+    ] ;
+    hydra:Link [
+        hydra:property dprod:outputDataset ;
+        hydra:description "The generated performance report (CSV)."@en ;
+        hydra:range dcat:Dataset
+    ] ;
+    hydra:supportedOperation [
+        a hydra:Operation ;
+        hydra:method "GET" ;
+        hydra:expects rdf:nil ; # Expects nothing in the request body
+        hydra:returns dcat:Dataset ; # Returns the output dataset
+        hydra:title "Retrieve Performance Report"@en ;
+        hydra:description "Retrieves the RDF Quiz Performance Report (CSV)."@en
+        # Could add hydra:property [ hydra:iri dprod:outputDataset ]
+    ] ;
+    hydra:supportedOperation [
+        a hydra:Operation ;
+        hydra:method "GET" ;
+        hydra:expects rdf:nil ;
+        hydra:returns tla_dprod:XAPIDataSource ; # Or xapi:Statement if returning individual statements
+        hydra:title "Retrieve Raw xAPI Statements"@en ;
+        hydra:description "Retrieves the raw xAPI statements that form the input for this learning activity product."@en ;
+        hydra:property [ hydra:iri dprod:inputDataset ] # Associates operation with the input dataset
+    ] .
+
+# Example Data Product Catalog (Optional)
+ex:tlaDataProductCatalog a dprod:DataProductCatalog ; # Assuming dprod:DataProductCatalog is defined in dprod.ttl
+    dct:title "TLA Data Product Catalog"@en ;
+    hydra:member ex:lap_rdf_quiz_analysis ;
+    hydra:description "A catalog of available TLA-enhanced data products."@en .

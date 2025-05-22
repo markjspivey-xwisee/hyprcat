@@ -1,0 +1,199 @@
+@prefix tla_dprod: <https://ekgf.github.io/hyprcat/tla_dprod/> .
+@prefix dprod: <https://ekgf.github.io/dprod/> .
+@prefix xapi: <https://w3id.org/xapi/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Part 1: Ontology Setup
+<https://ekgf.github.io/hyprcat/tla_dprod/> a owl:Ontology ;
+    owl:imports <https://ekgf.github.io/dprod/> ;
+    dct:title "Total Learning Architecture Data Product Vocabulary"@en ;
+    dct:description "An extension to the DPROD vocabulary to model data products in the context of ADL's Total Learning Architecture and xAPI."@en ;
+    owl:versionInfo "0.1.0" ;
+    dct:creator [ rdf:type foaf:Agent ; foaf:name "AI Agent" ] ; # Assuming AI Agent for now
+    dct:created "2024-07-31"^^xsd:date ; # Date of task
+    dct:modified "2024-07-31"^^xsd:date . # Date of task
+
+# Part 2: Define Core xAPI-related RDF Concepts (under xapi: namespace)
+
+# ---- xAPI Classes ----
+xapi:Statement a owl:Class ;
+    rdfs:label "xAPI Statement"@en ;
+    rdfs:comment "Represents an xAPI Statement."@en .
+
+xapi:Actor a owl:Class ;
+    rdfs:label "xAPI Actor"@en ;
+    rdfs:comment "Represents an xAPI Actor (Agent or Group)."@en .
+
+xapi:Verb a owl:Class ;
+    rdfs:label "xAPI Verb"@en ;
+    rdfs:comment "Represents an xAPI Verb."@en .
+
+xapi:Object a owl:Class ;
+    rdfs:label "xAPI Object"@en ;
+    rdfs:comment "A superclass for xAPI Objects (Activity, Agent, StatementRef, etc.)."@en .
+
+xapi:Activity a owl:Class ;
+    rdfs:label "xAPI Activity"@en ;
+    rdfs:comment "Represents an xAPI Activity."@en ;
+    rdfs:subClassOf dcat:Dataset , xapi:Object .
+
+xapi:Agent a owl:Class ;
+    rdfs:label "xAPI Agent"@en ;
+    rdfs:comment "Represents an xAPI Agent, a type of Actor and Object."@en ;
+    rdfs:subClassOf xapi:Actor , foaf:Agent , xapi:Object .
+
+xapi:Group a owl:Class ;
+    rdfs:label "xAPI Group"@en ;
+    rdfs:comment "Represents an xAPI Group, a type of Actor and Object."@en ;
+    rdfs:subClassOf xapi:Actor , foaf:Group , xapi:Object .
+
+xapi:Result a owl:Class ;
+    rdfs:label "xAPI Result"@en ;
+    rdfs:comment "Represents the result component of an xAPI Statement."@en .
+
+xapi:Context a owl:Class ;
+    rdfs:label "xAPI Context"@en ;
+    rdfs:comment "Represents the context component of an xAPI Statement."@en .
+
+xapi:ActivityDefinition a owl:Class ;
+    rdfs:label "xAPI Activity Definition"@en ;
+    rdfs:comment "Represents the definition of an xAPI Activity."@en .
+
+xapi:ActivityType a owl:Class ;
+    rdfs:label "xAPI Activity Type"@en ;
+    rdfs:comment "Represents the type of an xAPI Activity (e.g., IRI for cmi.interaction)."@en .
+
+
+# ---- Properties for xAPI Statement ----
+xapi:actor a owl:ObjectProperty ;
+    rdfs:label "Statement Actor"@en ;
+    rdfs:comment "The Actor who performed the action in an xAPI statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xapi:Actor .
+
+xapi:verb a owl:ObjectProperty ;
+    rdfs:label "Statement Verb"@en ;
+    rdfs:comment "The Verb defining the action in an xAPI statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xapi:Verb .
+
+xapi:object a owl:ObjectProperty ;
+    rdfs:label "Statement Object"@en ;
+    rdfs:comment "The Object of an xAPI statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xapi:Object .
+
+xapi:result a owl:ObjectProperty ;
+    rdfs:label "Statement Result"@en ;
+    rdfs:comment "The result component of an xAPI statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xapi:Result .
+
+xapi:context a owl:ObjectProperty ;
+    rdfs:label "Statement Context"@en ;
+    rdfs:comment "The context component of an xAPI statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xapi:Context .
+
+xapi:timestamp a owl:DatatypeProperty ;
+    rdfs:label "Timestamp"@en ;
+    rdfs:comment "Timestamp of when the event occurred, as part of an xAPI statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xsd:dateTime .
+
+xapi:stored a owl:DatatypeProperty ;
+    rdfs:label "Stored Timestamp"@en ;
+    rdfs:comment "Timestamp of when the statement was recorded by the LRS."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xsd:dateTime .
+
+xapi:authority a owl:ObjectProperty ;
+    rdfs:label "Statement Authority"@en ;
+    rdfs:comment "The authority who asserted the statement."@en ;
+    rdfs:domain xapi:Statement ;
+    rdfs:range xapi:Actor .
+
+# ---- Common xAPI Properties ----
+xapi:id a owl:DatatypeProperty ;
+    rdfs:label "xAPI ID"@en ;
+    rdfs:comment "Generic identifier used in xAPI, e.g., for Statements, Activities, Verbs (often an IRI or UUID)."@en .
+
+xapi:objectType a owl:DatatypeProperty ;
+    rdfs:label "xAPI Object Type String"@en ;
+    rdfs:comment "Indicates the type of an xAPI object when it's a literal (e.g., 'Activity', 'Agent'). For RDF, rdf:type is preferred for IRI objects."@en ;
+    rdfs:range xsd:string .
+
+xapi:name a owl:DatatypeProperty ;
+    rdfs:label "xAPI Name"@en ;
+    rdfs:comment "A name, often a language map (e.g., for Activity definition, Actor name)."@en ;
+    rdfs:range rdf:langString .
+
+xapi:description a owl:DatatypeProperty ;
+    rdfs:label "xAPI Description"@en ;
+    rdfs:comment "A description, often a language map (e.g., for Activity definition)."@en ;
+    rdfs:range rdf:langString .
+
+xapi:display a owl:DatatypeProperty ;
+    rdfs:label "xAPI Verb Display"@en ;
+    rdfs:comment "A display string, often a language map, for Verbs."@en ;
+    rdfs:range rdf:langString .
+
+# ---- Properties for xAPI Activity ----
+xapi:definition a owl:ObjectProperty ;
+    rdfs:label "Has Activity Definition"@en ;
+    rdfs:comment "Links an xAPI Activity to its definition."@en ;
+    rdfs:domain xapi:Activity ;
+    rdfs:range xapi:ActivityDefinition .
+
+# ---- Properties for xAPI ActivityDefinition ----
+# Uses xapi:name and xapi:description (defined above)
+xapi:type a owl:ObjectProperty ;
+    rdfs:label "Has Activity Type"@en ;
+    rdfs:comment "The type of an xAPI Activity, as part of its definition (e.g. an IRI for 'http://adlnet.gov/expapi/activities/course')."@en ;
+    rdfs:domain xapi:ActivityDefinition ;
+    rdfs:range xapi:ActivityType .
+
+
+# Part 3: Define TLA-specific Vocabulary (under tla_dprod: namespace)
+
+# ---- TLA Classes ----
+tla_dprod:LearningActivityProduct a owl:Class ;
+    rdfs:label "Learning Activity Product"@en ;
+    rdfs:subClassOf dprod:DataProduct ;
+    rdfs:comment "A data product that represents a learning activity or its outcomes in a TLA context."@en .
+
+tla_dprod:XAPIDataSource a owl:Class ;
+    rdfs:label "xAPI Data Source"@en ;
+    rdfs:subClassOf dcat:Dataset ;
+    rdfs:comment "A data source providing xAPI statements, potentially an LRS or a collection of statement files."@en .
+
+tla_dprod:Competency a owl:Class ;
+    rdfs:label "TLA Competency"@en ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:comment "A competency within the TLA framework."@en .
+
+# ---- TLA Properties ----
+tla_dprod:generatesStatement a owl:ObjectProperty ;
+    rdfs:label "Generates Statement"@en ;
+    rdfs:comment "Indicates that a learning activity product can generate xAPI statements of a certain nature."@en ;
+    rdfs:domain tla_dprod:LearningActivityProduct ;
+    rdfs:range xapi:Statement .
+
+tla_dprod:assessesCompetency a owl:ObjectProperty ;
+    rdfs:label "Assesses Competency"@en ;
+    rdfs:comment "Links a learning activity product to a competency it assesses or helps develop."@en ;
+    rdfs:domain tla_dprod:LearningActivityProduct ;
+    rdfs:range tla_dprod:Competency .
+
+tla_dprod:referencesActivity a owl:ObjectProperty ;
+    rdfs:label "References Activity"@en ;
+    rdfs:comment "Links a Learning Activity Product to the underlying xAPI Activity it represents or is based on."@en ;
+    rdfs:domain tla_dprod:LearningActivityProduct ;
+    rdfs:range xapi:Activity .
