@@ -24,7 +24,8 @@
         hydra:returns dcat:Dataset ;
         hydra:title "Retrieve Data Product" ;
         hydra:description "Retrieve the associated dataset of the data product."
-    ] .
+    ] ;
+    dprod:hasLifecycleStatus :exampleDataProductLifecycle .
 
 # A lifecycle status with an operation to update the status
 :exampleDataProductLifecycle a dprod:DataProductLifecycleStatus ;
@@ -40,8 +41,29 @@
 
 # A collection of data products
 :dataProductCatalog a hydra:Collection ;
-    hydra:member :exampleDataProduct ;
+    hydra:member :exampleDataProduct, :anotherDataProduct ;
     hydra:description "Collection of available data products" .
+
+# Another sample data product
+:anotherDataProduct a dprod:DataProduct ;
+    dct:title "Sensor Data Stream" ;
+    dprod:hasLifecycleStatus :exampleDataProductLifecycle ; # Reusing existing lifecycle status
+    hydra:Link [
+        hydra:property dprod:outputDataset ;
+        hydra:description "Output dataset for the sensor stream" ;
+        hydra:range dcat:Dataset
+    ] ;
+    dprod:outputDataset [
+        a dcat:Dataset ;
+        dct:title "Raw sensor output stream"
+    ] ;
+    hydra:supportedOperation [
+        a hydra:Operation ;
+        hydra:method "GET" ;
+        hydra:returns dcat:Dataset ;
+        hydra:title "Retrieve Sensor Data Stream" ;
+        hydra:description "Retrieve the raw sensor output stream."
+    ] .
 
 # API documentation for the DPROD API
 :dprodApi a hydra:ApiDocumentation ;

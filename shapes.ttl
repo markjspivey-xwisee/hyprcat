@@ -1,0 +1,40 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dprod: <https://ekgf.github.io/dprod/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . # Added rdfs for labels/comments
+@prefix hyprcat_shapes: <https://ekgf.github.io/hyprcat/shapes/> .
+
+hyprcat_shapes:DataProductShape a sh:NodeShape ;
+    rdfs:label "Data Product Shape" ;
+    rdfs:comment "Defines constraints for instances of dprod:DataProduct." ;
+    sh:targetClass dprod:DataProduct ;
+
+    sh:property [
+        sh:path dct:title ;
+        sh:name "Title" ;
+        sh:description "Ensures the data product has exactly one title, which is a string." ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+
+    sh:property [
+        sh:path dprod:outputDataset ;
+        sh:name "Output Dataset" ;
+        sh:description "Ensures the data product has at least one output dataset, and that these are IRIs linking to dcat:Dataset instances." ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:class dcat:Dataset ; # Specifies that the IRI should point to a dcat:Dataset
+    ] ;
+
+    sh:property [
+        sh:path dprod:hasLifecycleStatus ;
+        sh:name "Lifecycle Status" ;
+        sh:description "Ensures the data product has at most one lifecycle status linked, and that it's an IRI pointing to a dprod:DataProductLifecycleStatus instance." ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:class dprod:DataProductLifecycleStatus ; # Ensures it links to the correct type of status
+    ] .
